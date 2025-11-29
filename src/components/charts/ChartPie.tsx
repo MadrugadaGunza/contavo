@@ -23,7 +23,7 @@ const ChartPie = ({ data }: PieChartCardProps) => {
     const COLORS = ['#EF4444', '#3B82F6', '#F59E0B', '#10B981', '#8B5CF6'];
 
     return (
-        <div className="w-full rounded-lg shadow text-dark-500 p-6">
+        <div className="w-full rounded-lg text-dark-500 p-6 bg-white shadow-sm">
             <div className="flex items-center justify-between mb-2 text-gray-800">
                 <h3 className="text-lg font-semibold text-gray-800">Distribuição (Pie)</h3>
                 <span className="text-sm text-gray-500">Atualizado</span>

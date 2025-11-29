@@ -3,7 +3,7 @@ import ChartPie from "../../components/charts/ChartPie"
 
 const Dashboard = () => {
     return (
-        <section className="flex flex-col flex-1 overflow-y-auto p-4">
+        <section className="flex flex-col flex-1 overflow-y-auto p-4 bg-gray-100 min-h-screen mt-16">
             <h1 className="text-2xl font-bold">Welcome to my dashboard!</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 my-4">

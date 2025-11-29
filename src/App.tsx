@@ -1,11 +1,14 @@
 import './App.css';;
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import PublicRoute from './routes/PublicRoute';
+import PrivateRoute from './routes/PrivateRoute';
+// pages
 import Login from './pages/public/Login';
 import NotFound from './pages/public/NotFound';
-import PrivateRoute from './routes/PrivateRoute';
 import Dashboard from './pages/admin/Dashboard';
-import Shopping from './pages/admin/Shopping';
+// shopping pages
+import Shopping from './pages/admin/shopping/Shopping';
+import Create from './pages/admin/shopping/Create';
 
 function App() {
   return (
@@ -21,6 +24,7 @@ function App() {
         <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/shopping' element={<Shopping />} />
+          <Route path='/shopping/create' element={<Create />} />
         </Route>
       </Routes>
     </Router>
