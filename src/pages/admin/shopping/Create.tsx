@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { shoppingSchema } from "../../../validations/shoppingSchema";
 
@@ -9,6 +9,7 @@ import Select from "../../../components/form/Select";
 import Textarea from "../../../components/form/Textarea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../../../utils/conversions";
 
 const categories = [
     { value: "factura", label: "Factura" },
@@ -33,50 +34,63 @@ const payment_method = [
 ];
 
 const Create = () => {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: yupResolver(shoppingSchema) });
+    const { register, handleSubmit, setValue, control, formState: { errors } } = useForm({
+        resolver: yupResolver(shoppingSchema)
+    });
     const navigate = useNavigate();
 
+    // Observa unit_price, amount e iva para recalcular total
+    const unitPrice = useWatch({ control, name: "unit_price" });
+    const amount = useWatch({ control, name: "amount" });
+    const ivaOption = useWatch({ control, name: "iva" });
+
+    React.useEffect(() => {
+        if (!unitPrice || !amount) {
+            setValue("total_price", 0);
+            return;
+        }
+
+        let total = Number(unitPrice) * Number(amount);
+
+        if (ivaOption === "sim") {
+            total = total * 1.14;
+        }
+
+        setValue("total_price", total);
+    }, [unitPrice, amount, ivaOption, setValue]);
+
     const onSubmit = async (data: any) => {
+        const formData = new FormData();
+        formData.append("product", data.product);
+        formData.append("category", data.category);
+        formData.append("supplier", data.supplier);
+        formData.append("nif_supplier", data.nif_supplier);
+        formData.append("contact_supplier", data.contact_supplier);
+        formData.append("unit_price", String(data.unit_price));
+        formData.append("amount", String(data.amount));
+        formData.append("iva", data.iva);
+        formData.append("status", data.status);
+        formData.append("payment_method", data.payment_method);
+        formData.append("description", data.description ?? "");
+        formData.append("total_price", data.total_price);
+        formData.append("file", data.file);
+
         try {
-            const toastId = toast.loading("A enviar compra...");
-            const formData = new FormData();
-
-            if (data.file) {
-                formData.append("file", data.file);
-            }
-
-            formData.append("product", data.product);
-            formData.append("category", data.category);
-            formData.append("supplier", data.supplier);
-            formData.append("nif_supplier", data.nif_supplier);
-            formData.append("contact_supplier", data.contact_supplier);
-            formData.append("unit_price", data.unit_price);
-            formData.append("amount", data.amount);
-            formData.append("iva", data.iva);
-            formData.append("total_price", data.total_price);
-            formData.append("status", data.status);
-            formData.append("payment_method", data.payment_method);
-            formData.append("description", data.description || "");
-
-            const response = await fetch("http://localhost:8000/api/shopping", {
-                method: "POST",
-                body: formData
+            const response = await fetch('http://localhost:8000/api/shopping', {
+                method: 'POST',
+                body: formData,
             });
+            console.log(response);
             const result = await response.json();
-
-            if (!response.ok) {
-                toast.error(result.message || "Erro ao registar compra", { id: toastId });
-                return;
-            }
-
-            toast.success("Compra registada com sucesso!", { id: toastId });
-            navigate('/shopping')
+            if (!response.ok) throw new Error(`Erro ao registar a compra ${result.message}`);
+            console.log(result);
+            toast.success('Operação concluída com sucesso!');
+            navigate('/shopping');
         } catch (error) {
-            console.error("Erro ao enviar:", error);
-            toast.error("Erro inesperado ao registar compra", { id: toastId });
+            console.log(error);
+            toast.error('Erro ao registar a compra!');
         }
     };
-
 
     return (
         <section className="p-4 mt-16 bg-gray-100 min-h-screen">
@@ -120,7 +134,7 @@ const Create = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <Input label="Preço Unitario" type="number" {...register("unit_price")} />
                             <p className="text-red-600 mt-1">{errors.unit_price?.message}</p>
@@ -132,17 +146,17 @@ const Create = () => {
                         </div>
 
                         <div>
-                            <Select label="IVA" options={iva} {...register("iva")} />
-                            <p className="text-red-600 mt-1">{errors.iva?.message}</p>
-                        </div>
-
-                        <div>
-                            <Input label="Preço Total" type="number" {...register("total_price")} />
+                            <Input label="Preço total" type="number" {...register("total_price")} />
                             <p className="text-red-600 mt-1">{errors.total_price?.message}</p>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <Select label="IVA" options={iva} {...register("iva")} />
+                            <p className="text-red-600 mt-1">{errors.iva?.message}</p>
+                        </div>
+
                         <div>
                             <Select label="Estado da Compra" options={status} {...register("status")} />
                             <p className="text-red-600 mt-1">{errors.status?.message}</p>

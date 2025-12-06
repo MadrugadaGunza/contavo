@@ -85,7 +85,7 @@ const Details = () => {
                         <h2 className="font-semibold text-lg">Valores</h2>
                         <p><strong>Preço Unitário:</strong> {shopping.unit_price.toFixed(2)} Kz</p>
                         <p><strong>Quantidade:</strong> {shopping.amount}</p>
-                        <p><strong>IVA:</strong> {shopping.iva}</p>
+                        <p><strong>IVA:</strong> {shopping.iva}%</p>
                         <p><strong>Total:</strong> {shopping.total_price.toFixed(2)} Kz</p>
                     </div>
 

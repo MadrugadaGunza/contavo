@@ -1,4 +1,4 @@
-import { CheckCheck, ChevronLeft, ChevronRight, ChevronRightCircle, Eye, Pencil, Plus, ShoppingCart, Trash2, X } from "lucide-react"
+import { CheckCheck, ChevronLeft, ChevronRight, Eye, Pencil, Plus, ShoppingCart, Trash2, X } from "lucide-react"
 import React from "react"
 import { Link } from "react-router-dom";
 import { formatCurrency, getStatusClasses } from "../../../utils/conversions";
@@ -14,7 +14,7 @@ type Shopping = {
     unit_price: number;
     amount: number;
     iva: number;
-    total_price: number;
+    // total_price: number;
     status: string;
     payment_method: string;
     description?: string;
@@ -42,7 +42,7 @@ const Shopping = () => {
     const cancelado = shoppings.filter((item) => item.status == 'cancelado');
 
     return (
-        <section className='flex flex-col flex-1 overflow-y-auto p-4 mt-16 bg-gray-100'>
+        <section className='p-3 mt-16 bg-gray-100 min-h-screen'>
             <div className="flex md:flex-row justify-between items-center mb-4">
                 <Link to="/dashboard" className="inline-flex gap-1 bg-gray-800 text-white pl-2 pr-5 py-2 hover:bg-gray-700 transition duration-300">
                     <ChevronLeft />
